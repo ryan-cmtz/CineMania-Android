@@ -2,7 +2,7 @@
 
 **Proyecto:** aplicación móvil Android para administrar un catálogo local de películas/productos de CineMania.  
 **Tecnología observada en el código:** Kotlin, Jetpack Compose, Navigation Compose, Room, Kotlin Flow, Hilt y KSP.  
-**Estado de esta entrega:** dos pantallas y CRUD persistente implementado con Room para cuatro entidades: `productos`, `generos`, `usuarios` y `resenas`. La interfaz incluye pestañas para realizar altas, consultas, ediciones y eliminaciones, validación de entradas y mensajes de resultado. Hay dos commits locales. El remoto público existe, pero sigue vacío porque el push requiere iniciar sesión con GitHub Desktop o Git Credential Manager. La ejecución en dispositivo aún necesita evidencia.
+**Estado de esta entrega:** dos pantallas y CRUD persistente implementado con Room para cuatro entidades: `productos`, `generos`, `usuarios` y `resenas`. La interfaz incluye pestañas para realizar altas, consultas, ediciones y eliminaciones, validación de entradas y mensajes de resultado. La rama `main` y su historial ya están publicados en el repositorio público de GitHub. Hay capturas de ejecución desde el AVD `Pixel_6_Pro` en `evidencia_android/`.
 
 > Este documento separa los criterios indicados por la evaluación de las funciones que actualmente se pueden comprobar en el código. Las propuestas futuras se identifican expresamente como tales.
 
@@ -246,7 +246,7 @@ Medidas aplicables al proyecto:
 
 ## 10. Repositorio y control de versiones
 
-Git registra cambios por commits, permite comparar versiones y restaurar estados previos. El proyecto tiene dos commits locales en la rama `main` y el remoto `origin` apunta a [github.com/ryan-cmtz/CineMania-Android](https://github.com/ryan-cmtz/CineMania-Android). El repositorio público fue creado, pero todavía está vacío: falta autenticar Git desde GitHub Desktop/Git Credential Manager y ejecutar `git push -u origin main` para subir el código y su historial.
+Git registra cambios por commits, permite comparar versiones y restaurar estados previos. La rama `main` con el código, la documentación y la evidencia está publicada en [github.com/ryan-cmtz/CineMania-Android](https://github.com/ryan-cmtz/CineMania-Android) y configurada como `origin/main`.
 
 Para compilar localmente, abre el proyecto en Android Studio y ejecuta la variante `app`/`debug`, o usa `gradlew.bat assembleDebug` en Windows con Android SDK configurado.
 
@@ -273,7 +273,7 @@ El remoto ya está configurado; no vuelvas a ejecutar `git remote add`.
 | Sensor y justificación | Acelerómetro propuesto; implementación pendiente, sección 7. |
 | Librerías/toolkits | Documentados según dependencias configuradas, sección 8. |
 | Seguridad para Android/Kotlin | Medidas aplicables y límites actuales, sección 9. |
-| Sistema de control de versiones y utilidad | Git registra cambios y permite volver a versiones anteriores. URL configurada; el contenido aún no está publicado, sección 10. |
+| Sistema de control de versiones y utilidad | Git registra cambios, permite volver a versiones anteriores y el contenido está publicado en GitHub, sección 10. |
 
 ### Criterio 2 - Desarrollo del proyecto (60%)
 
