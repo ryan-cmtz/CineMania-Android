@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">CineManía</string>
+    <string name="logo_description">Logo de CineManía</string>
+    <string name="home_title">CineManía</string>
+    <string name="home_subtitle">Descubre y guarda tus películas favoritas</string>
+    <string name="open_catalog">Abrir catálogo</string>
+    <string name="catalog_title">Catálogo de películas</string>
+    <string name="catalog_intro">Agrega películas y administra tu colección.</string>
+    <string name="product_name">Nombre de la película</string>
+    <string name="name_limit">Máximo 20 caracteres</string>
+    <string name="product_description">Descripción</string>
+    <string name="add_product">Agregar película</string>
+    <string name="save_changes">Guardar cambios</string>
+    <string name="cancel">Cancelar</string>
+    <string name="empty_catalog">Aún no hay películas. ¡Agrega la primera!</string>
+    <string name="edit">Editar</string>
+    <string name="delete">Eliminar</string>
+    <string name="back_home">Volver al inicio</string>
+</resources>
