@@ -4,6 +4,8 @@
 **Tecnología observada en el código:** Kotlin, Jetpack Compose, Navigation Compose, Room, Kotlin Flow, Hilt y KSP.  
 **Estado de esta entrega:** dos pantallas y CRUD persistente implementado con Room para cuatro entidades: `productos`, `generos`, `usuarios` y `resenas`. La interfaz incluye pestañas para realizar altas, consultas, ediciones y eliminaciones, validación de entradas y mensajes de resultado. La rama `main` y su historial ya están publicados en el repositorio público de GitHub. Hay capturas de ejecución desde el AVD `Pixel_6_Pro` en `evidencia_android/`.
 
+**Documentos de entrega:** [Informe del Criterio 1 (PDF)](docs/Documentacion_CineMania_Criterio_1.pdf) y [guía del cuestionario de Revisión 4](GUIA_CUESTIONARIO_REVISION_4.md).
+
 > Este documento separa los criterios indicados por la evaluación de las funciones que actualmente se pueden comprobar en el código. Las propuestas futuras se identifican expresamente como tales.
 
 ## 1. Descripción del proyecto
