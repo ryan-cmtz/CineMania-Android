@@ -2,7 +2,7 @@
 
 **Proyecto:** aplicación móvil Android para administrar un catálogo local de películas/productos de CineMania.  
 **Tecnología observada en el código:** Kotlin, Jetpack Compose, Navigation Compose, Room, Kotlin Flow, Hilt y KSP.  
-**Estado de esta entrega:** dos pantallas y CRUD persistente implementado con Room para cuatro entidades: `productos`, `generos`, `usuarios` y `resenas`. La interfaz incluye pestañas para realizar altas, consultas, ediciones y eliminaciones. El repositorio remoto y la evidencia de ejecución en dispositivo siguen pendientes.
+**Estado de esta entrega:** dos pantallas y CRUD persistente implementado con Room para cuatro entidades: `productos`, `generos`, `usuarios` y `resenas`. La interfaz incluye pestañas para realizar altas, consultas, ediciones y eliminaciones, validación de entradas y mensajes de resultado. Hay dos commits locales. El remoto público existe, pero sigue vacío porque el push requiere iniciar sesión con GitHub Desktop o Git Credential Manager. La ejecución en dispositivo aún necesita evidencia.
 
 > Este documento separa los criterios indicados por la evaluación de las funciones que actualmente se pueden comprobar en el código. Las propuestas futuras se identifican expresamente como tales.
 
@@ -162,13 +162,13 @@ erDiagram
 | productos | nombre | TEXT | Requerido; máximo 20 caracteres validado en la entidad y formulario |
 | productos | descripcion | TEXT | Opcional; valor inicial vacío |
 | generos | id | INTEGER | Clave primaria autogenerada |
-| generos | nombre | TEXT | Requerido |
+| generos | nombre | TEXT | Requerido; máximo 40 caracteres validado en el ViewModel |
 | usuarios | id | INTEGER | Clave primaria autogenerada |
-| usuarios | nombre, correo | TEXT, TEXT | Requeridos; correo con formato validado |
+| usuarios | nombre, correo | TEXT, TEXT | Requeridos; máximos 60 y 120 caracteres; correo con formato validado |
 | resenas | id | INTEGER | Clave primaria autogenerada |
-| resenas | pelicula, usuario | TEXT, TEXT | Requeridos; referencias descriptivas en texto |
+| resenas | pelicula, usuario | TEXT, TEXT | Requeridos; máximos 100 y 60 caracteres; referencias descriptivas en texto |
 | resenas | puntuacion | INTEGER | Entero entre 1 y 5 |
-| resenas | comentario | TEXT | Comentario de la reseña |
+| resenas | comentario | TEXT | Máximo 500 caracteres |
 
 ### Esquema implementado y relación lógica
 
@@ -234,33 +234,30 @@ Para implementarlo, se consultaría `SensorManager` y el sensor `TYPE_ACCELEROME
 Medidas aplicables al proyecto:
 
 - Solicitar solo permisos necesarios. La app actual no declara permisos en el manifiesto.
-- Mantener `android:allowBackup` y reglas de extracción alineadas con la sensibilidad de los datos. El catálogo no maneja credenciales; si luego se guardan datos sensibles, excluirlos del backup o proteger el flujo de respaldo.
+- La aplicación no declara permisos y `android:allowBackup="false"` desactiva la copia automática de la base local, que puede contener correos de prueba.
 - No incluir claves privadas, contraseñas ni tokens en el código fuente. Para secretos de backend, usar almacenamiento/gestión del lado servidor y tokens de corta duración.
 - Si se incorpora comunicación remota, usar HTTPS/TLS y rechazar tráfico en claro; validar certificados con las prácticas estándar de Android.
-- Validar entradas (el nombre ya tiene límite) y usar consultas parametrizadas de Room en vez de concatenar SQL.
+- Validar entradas (nombre de película, correo, puntuación y longitudes máximas) y usar consultas parametrizadas de Room en vez de concatenar SQL.
 - Guardar preferencias o credenciales sensibles con Android Keystore mediante una biblioteca de cifrado adecuada; Room por sí solo no cifra la base de datos.
 - Reducir datos personales recolectados y definir retención/eliminación. Aplicar controles de acceso en backend si se añaden cuentas.
 - Mantener dependencias actualizadas, revisar permisos y evitar registrar datos privados en Logcat.
+- La base SQLite local no está cifrada. Esta versión es demostrativa y no debe guardar credenciales ni datos reales sensibles; para ese uso habría que integrar cifrado de base de datos y gestión de claves con Android Keystore.
 - Configurar endurecimiento de versión de lanzamiento (minificación/optimización y firma protegida) antes de distribución; el build actual desactiva optimización en `release`.
 
 ## 10. Repositorio y control de versiones
 
-Git registra cambios por commits, permite comparar versiones y restaurar estados previos. El proyecto ya queda inicializado como repositorio Git local; el paso pendiente es crear un repositorio remoto en GitHub y publicar la rama `main`. **URL del repositorio remoto: pendiente de crear.** No se inventa un enlace.
+Git registra cambios por commits, permite comparar versiones y restaurar estados previos. El proyecto tiene dos commits locales en la rama `main` y el remoto `origin` apunta a [github.com/ryan-cmtz/CineMania-Android](https://github.com/ryan-cmtz/CineMania-Android). El repositorio público fue creado, pero todavía está vacío: falta autenticar Git desde GitHub Desktop/Git Credential Manager y ejecutar `git push -u origin main` para subir el código y su historial.
 
 Para compilar localmente, abre el proyecto en Android Studio y ejecuta la variante `app`/`debug`, o usa `gradlew.bat assembleDebug` en Windows con Android SDK configurado.
 
 Comandos sugeridos desde la raíz del proyecto:
 
 ```bash
-git init
-git add .
-git commit -m "Entrega inicial de CineMania"
-git branch -M main
-git remote add origin https://github.com/USUARIO/REPOSITORIO.git
+git status
 git push -u origin main
 ```
 
-Reemplazar `USUARIO/REPOSITORIO` por el destino real antes de ejecutar los dos últimos comandos.
+El remoto ya está configurado; no vuelvas a ejecutar `git remote add`.
 
 ## 11. Criterios de evaluación y estado
 
@@ -276,7 +273,7 @@ Reemplazar `USUARIO/REPOSITORIO` por el destino real antes de ejecutar los dos �
 | Sensor y justificación | Acelerómetro propuesto; implementación pendiente, sección 7. |
 | Librerías/toolkits | Documentados según dependencias configuradas, sección 8. |
 | Seguridad para Android/Kotlin | Medidas aplicables y límites actuales, sección 9. |
-| Sistema de control de versiones y utilidad | Git permite registrar cambios y volver a versiones previas; repositorio remoto y URL siguen pendientes, sección 10. |
+| Sistema de control de versiones y utilidad | Git registra cambios y permite volver a versiones anteriores. URL configurada; el contenido aún no está publicado, sección 10. |
 
 ### Criterio 2 - Desarrollo del proyecto (60%)
 
@@ -291,11 +288,15 @@ La rúbrica describe tres revisiones periódicas de 10% y una revisión final de
 
 ### Presentación del proyecto (10%)
 
-La rúbrica solicita presentar la app de Unidad 3 y validar su funcionamiento desde un dispositivo Android. Esta validación requiere ejecutar la app en dispositivo físico o emulador Android y conservar evidencia (capturas/video breve o acta de demostración). No se afirma que se haya realizado desde este entorno.
+La rúbrica solicita presentar la app de Unidad 3 y validar su funcionamiento desde un dispositivo Android. Esta validación requiere ejecutar la app en dispositivo físico o emulador Android y conservar evidencia (capturas/video breve o acta de demostración).
+
+Se comprobó la instalación y el inicio en el AVD `Pixel_6_Pro`; también se probó agregar, editar y eliminar una película y agregar un género. Las capturas están en [`evidencia_android/`](evidencia_android/). Es evidencia de emulador, no de teléfono físico.
 
 La escala visible en la rúbrica considera especialmente que la app esté instalada en un teléfono Android, funcione correctamente, conserve el estado al girar la pantalla y muestre correctamente sus controles. Un AVD con Android cuenta como alternativa de validación para la rúbrica final. La selección de pestaña y campos de los formularios usan `rememberSaveable`; aun así, se debe confirmar en ejecución que el estado y la disposición se conservan al girar.
 
 ## 12. Revisión 4: guía del cuestionario oral
+
+También se entrega una versión aparte para estudiar: [`GUIA_CUESTIONARIO_REVISION_4.md`](GUIA_CUESTIONARIO_REVISION_4.md).
 
 La rúbrica indica que se extraen seis preguntas al azar. Estas respuestas breves son material de estudio y deben contrastarse con la implementación final antes de la exposición. Las preguntas repetidas en la hoja se conservan para corresponder con su numeración.
 

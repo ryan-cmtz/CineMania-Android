@@ -8,7 +8,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.proyectoaplicacionesmoviles.domain.model.*
 
@@ -26,7 +26,7 @@ fun PantallaDos(navController: NavController, viewModel: ProductoViewModel = hil
 
     Scaffold(topBar = { TopAppBar(title = { Text("CineMania | Catálogo") }) }) { padding ->
         Column(Modifier.fillMaxSize().padding(padding)) {
-            ScrollableTabRow(selectedTabIndex = seccion) {
+            PrimaryScrollableTabRow(selectedTabIndex = seccion) {
                 secciones.forEachIndexed { index, label ->
                     Tab(selected = seccion == index, onClick = { seccion = index }, text = { Text(label) })
                 }
@@ -38,9 +38,9 @@ fun PantallaDos(navController: NavController, viewModel: ProductoViewModel = hil
                     2 -> UsuariosPanel(usuarios, viewModel)
                     3 -> ResenasPanel(resenas, viewModel)
                 }
-                mensaje?.let {
+                mensaje?.let { aviso ->
                     Spacer(Modifier.height(8.dp))
-                    Text(it, color = MaterialTheme.colorScheme.error)
+                    Text(aviso.texto, color = if (aviso.esError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary)
                     TextButton(onClick = viewModel::limpiarMensaje) { Text("Entendido") }
                 }
             }
@@ -59,7 +59,7 @@ private fun ProductosPanel(items: List<Producto>, vm: ProductoViewModel) {
     Text("Películas", style = MaterialTheme.typography.headlineSmall)
     OutlinedTextField(nombre, { if (it.length <= 20) nombre = it }, label = { Text("Nombre (máx. 20)") }, modifier = Modifier.fillMaxWidth(), singleLine = true)
     OutlinedTextField(descripcion, { descripcion = it }, label = { Text("Descripción") }, modifier = Modifier.fillMaxWidth())
-    Button(onClick = { vm.guardar(nombre, descripcion, items.firstOrNull { it.id == editId }); nombre = ""; descripcion = ""; editId = 0 }, enabled = nombre.isNotBlank()) { Text(if (editId == 0) "Agregar película" else "Guardar cambios") }
+    Button(onClick = { vm.guardar(nombre, descripcion, items.firstOrNull { it.id == editId }) { nombre = ""; descripcion = ""; editId = 0 } }, enabled = nombre.isNotBlank()) { Text(if (editId == 0) "Agregar película" else "Guardar cambios") }
     items.forEach { item -> ItemCard("${item.nombre}\n${item.descripcion}", onEdit = { editId = item.id; nombre = item.nombre; descripcion = item.descripcion }, onDelete = { vm.eliminar(item) }) }
 }
 
@@ -68,8 +68,8 @@ private fun GenerosPanel(items: List<Genero>, vm: ProductoViewModel) {
     var nombre by rememberSaveable { mutableStateOf("") }
     var editId by rememberSaveable { mutableIntStateOf(0) }
     Text("Géneros", style = MaterialTheme.typography.headlineSmall)
-    OutlinedTextField(nombre, { nombre = it }, label = { Text("Nombre del género") }, modifier = Modifier.fillMaxWidth(), singleLine = true)
-    Button(onClick = { if (vm.guardarGenero(nombre, editId)) { nombre = ""; editId = 0 } }, enabled = nombre.isNotBlank()) { Text(if (editId == 0) "Agregar género" else "Guardar cambios") }
+    OutlinedTextField(nombre, { nombre = it }, label = { Text("Nombre del género (máx. 40)") }, modifier = Modifier.fillMaxWidth(), singleLine = true)
+    Button(onClick = { vm.guardarGenero(nombre, editId) { nombre = ""; editId = 0 } }, enabled = nombre.isNotBlank()) { Text(if (editId == 0) "Agregar género" else "Guardar cambios") }
     items.forEach { item -> ItemCard(item.nombre, onEdit = { editId = item.id; nombre = item.nombre }, onDelete = { vm.eliminarGenero(item) }) }
 }
 
@@ -79,9 +79,9 @@ private fun UsuariosPanel(items: List<Usuario>, vm: ProductoViewModel) {
     var correo by rememberSaveable { mutableStateOf("") }
     var editId by rememberSaveable { mutableIntStateOf(0) }
     Text("Usuarios", style = MaterialTheme.typography.headlineSmall)
-    OutlinedTextField(nombre, { nombre = it }, label = { Text("Nombre") }, modifier = Modifier.fillMaxWidth(), singleLine = true)
-    OutlinedTextField(correo, { correo = it }, label = { Text("Correo") }, modifier = Modifier.fillMaxWidth(), singleLine = true)
-    Button(onClick = { if (vm.guardarUsuario(nombre, correo, editId)) { nombre = ""; correo = ""; editId = 0 } }, enabled = nombre.isNotBlank() && correo.isNotBlank()) { Text(if (editId == 0) "Agregar usuario" else "Guardar cambios") }
+    OutlinedTextField(nombre, { nombre = it }, label = { Text("Nombre (máx. 60)") }, modifier = Modifier.fillMaxWidth(), singleLine = true)
+    OutlinedTextField(correo, { correo = it }, label = { Text("Correo (máx. 120)") }, modifier = Modifier.fillMaxWidth(), singleLine = true)
+    Button(onClick = { vm.guardarUsuario(nombre, correo, editId) { nombre = ""; correo = ""; editId = 0 } }, enabled = nombre.isNotBlank() && correo.isNotBlank()) { Text(if (editId == 0) "Agregar usuario" else "Guardar cambios") }
     items.forEach { item -> ItemCard("${item.nombre}\n${item.correo}", onEdit = { editId = item.id; nombre = item.nombre; correo = item.correo }, onDelete = { vm.eliminarUsuario(item) }) }
 }
 
@@ -93,11 +93,11 @@ private fun ResenasPanel(items: List<Resena>, vm: ProductoViewModel) {
     var comentario by rememberSaveable { mutableStateOf("") }
     var editId by rememberSaveable { mutableIntStateOf(0) }
     Text("Reseñas", style = MaterialTheme.typography.headlineSmall)
-    OutlinedTextField(pelicula, { pelicula = it }, label = { Text("Película") }, modifier = Modifier.fillMaxWidth(), singleLine = true)
-    OutlinedTextField(usuario, { usuario = it }, label = { Text("Usuario") }, modifier = Modifier.fillMaxWidth(), singleLine = true)
+    OutlinedTextField(pelicula, { pelicula = it }, label = { Text("Película (máx. 100)") }, modifier = Modifier.fillMaxWidth(), singleLine = true)
+    OutlinedTextField(usuario, { usuario = it }, label = { Text("Usuario (máx. 60)") }, modifier = Modifier.fillMaxWidth(), singleLine = true)
     OutlinedTextField(puntuacion, { puntuacion = it.filter(Char::isDigit).take(1) }, label = { Text("Puntuación (1 a 5)") }, modifier = Modifier.fillMaxWidth(), singleLine = true)
-    OutlinedTextField(comentario, { comentario = it }, label = { Text("Comentario") }, modifier = Modifier.fillMaxWidth())
-    Button(onClick = { if (vm.guardarResena(pelicula, usuario, puntuacion.toIntOrNull() ?: 0, comentario, editId)) { pelicula = ""; usuario = ""; puntuacion = "5"; comentario = ""; editId = 0 } }, enabled = pelicula.isNotBlank() && usuario.isNotBlank()) { Text(if (editId == 0) "Agregar reseña" else "Guardar cambios") }
+    OutlinedTextField(comentario, { comentario = it.take(500) }, label = { Text("Comentario (máx. 500)") }, modifier = Modifier.fillMaxWidth())
+    Button(onClick = { vm.guardarResena(pelicula, usuario, puntuacion.toIntOrNull() ?: 0, comentario, editId) { pelicula = ""; usuario = ""; puntuacion = "5"; comentario = ""; editId = 0 } }, enabled = pelicula.isNotBlank() && usuario.isNotBlank()) { Text(if (editId == 0) "Agregar reseña" else "Guardar cambios") }
     items.forEach { item -> ItemCard("${item.pelicula} · ${item.puntuacion}/5\n${item.usuario}: ${item.comentario}", onEdit = { editId = item.id; pelicula = item.pelicula; usuario = item.usuario; puntuacion = item.puntuacion.toString(); comentario = item.comentario }, onDelete = { vm.eliminarResena(item) }) }
 }
 
